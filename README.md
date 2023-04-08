@@ -9,7 +9,8 @@ processing to occur. Whole slide images are selected and added to the cart and d
 
 Cancer Manifest Files:
 1. Brain Cancer: gdc_manifest_20230408_201809
-2. Breast Canceer: gdc_manifest_20230408_202627
+2. Breast Cancer: gdc_manifest_20230408_202627
+3. Kidney Cancer: gdc_manifest_20230408_203008
 
 ## Downloading manifest data
 
