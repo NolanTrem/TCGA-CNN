@@ -7,6 +7,11 @@ The manifest is created in the [GDC Data Portal repository](https://portal.gdc.c
 desired files to the cart and downloading. From there, the manifest is entered into the dataProcessing.py file for
 processing to occur. Whole slide images are selected and added to the cart and downloaded.
 
+Cancer Manifest Files:
+1. Brain Cancer: gdc_manifest_20230408_201809
+2. Breast Cancer: gdc_manifest_20230408_202627
+3. Kidney Cancer: gdc_manifest_20230408_203008
+
 ## Downloading manifest data
 
 Installing the [gdc install](https://www.debuggingtissue.com/latest-articles/installing-and-using-the-cli-gcd-data-transfer-tool-client-using-an-ubuntu-os)
