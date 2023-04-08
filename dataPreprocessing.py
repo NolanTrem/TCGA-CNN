@@ -1,13 +1,43 @@
 from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
-# Creates a selenium webdriver to scrape the page in Chrome
-#options = webdriver.ChromeOptions()
-#options.add_argument("--headless")
 driver = webdriver.Chrome()
+filename = "/Users/nolantremelling/Downloads/gdc_manifest_20230406_130639.txt"
 
-driver.get("https://portal.gdc.cancer.gov/files/889789cf-b211-4788-b62e-1c6be4dba889")
-if "Primary Tumor" in driver.page_source:
-    print('Found it!')
-else if ""
-else:
-    print('Did not find it.')
+with open(filename, mode='r') as file:
+    lines = file.readlines()
+
+    header = lines.pop(0)
+
+    with open(filename, mode='w') as new_file:
+        new_file.write(header)
+
+        for line in lines:
+            # Split the line on tabs
+            entries = line.strip().split('\t')
+
+            # Check if there are at least two entries in the line
+            if len(entries) >= 2:
+                # Reset the web driver to a new page
+                driver.get("about:blank")
+
+                # Navigate to the URL for the current entry
+                driver.get("https://portal.gdc.cancer.gov/files/" + entries[0])
+
+                wait = WebDriverWait(driver, 2)
+                element = wait.until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Primary Tumor') "
+                                                                               "or contains(text(), "
+                                                                               "'Solid Tissue Normal')]")))
+
+                if "Primary Tumor" in driver.page_source:
+                    entries.append("Primary Tumor")
+                elif "Solid Tissue Normal" in driver.page_source:
+                    entries.append("Solid Tissue Normal")
+                else:
+                    entries.append("Not found")
+
+                # Join the line back together with tabs
+                new_line = "\t".join(entries) + "\n"
+                new_file.write(new_line)
