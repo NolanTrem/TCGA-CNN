@@ -9,7 +9,9 @@ image database for the appropriate label—either as primary tumor or as solid t
 is the manifest file produced by the GDC Data Portal.
 
 ![Alt text](images/exampleManifestBeforeLabeling.png "Manifest before labeling")
+Manifest before labeling.
 ![Alt text](images/exampleManifesetAfterLabeling.png "Manifest after labeling")
+Manifest after labeling.
 
 The manifest is created in the [GDC Data Portal repository](https://portal.gdc.cancer.gov/repository) by adding the
 desired files to the cart and downloading. From there, the manifest is entered into the dataProcessing.py file for
