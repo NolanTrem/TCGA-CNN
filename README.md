@@ -26,12 +26,17 @@ To circumvent this problem, a python script to scrape web data is implemented. T
 image database for the appropriate label—either as primary tumor or as solid tissue normal. The input for this script
 is the manifest file produced by the GDC Data Portal.
 
+To label data, the dataPreprocessing.py script can be run using the following command:
+```commandline
+python dataPreprocessing.py /pathToMainfest/manifest.txt
+```
+
 ![Alt text](images/exampleManifestBeforeLabeling.png "Manifest before labeling")
 _Manifest before labeling._
 ![Alt text](images/exampleManifesetAfterLabeling.png "Manifest after labeling")
 _Manifest after labeling._
 
-## Data collection for training, testing, and validation
+## Data processing method for training, testing, and validation
 
 Training, testing, and validation has been done on whole slide images from 5 different cancer types, each with 100
 whole slide images for each cell type. For each of these, 60 of the whole slide images are primary tumors whereas 40 are
