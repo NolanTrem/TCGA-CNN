@@ -15,6 +15,7 @@ for i = 1 : length(theFiles)
     
     % TODO: This needs to parse each line of the manifest file and return
     % the last entry, which is the label for the data.
+    % https://www.mathworks.com/matlabcentral/answers/497882-parsing-text-files-for-beginners
     % columnVector{i,3} = 'done';
 end
 
