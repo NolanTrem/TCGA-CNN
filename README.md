@@ -13,6 +13,12 @@ Once a manifest has been created, the corresponding manifest data must be downlo
 [GDC Data Transfer Tool](https://gdc.cancer.gov/access-data/gdc-data-transfer-tool). Downloading the binary
 distribution for your system.
 
+The GDC Data Transfer Tool executable should then be placed in the same directory as the manifest that is to be read.
+From the command line, the following will allow the GDC Data Transfer Tool to download the data for the maifest:
+```commandline
+gdc-client download -m manifest.txt
+```
+
 ## Data labeling method
 
 Data presented by TCGA project doesn't include labels conducive to training a neural network in their manifest data.
