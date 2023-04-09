@@ -2,9 +2,10 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import sys
 
 driver = webdriver.Chrome()
-filename = "/Users/nolantremelling/Downloads/gdc_manifest_20230406_130639.txt"
+filename = sys.argv[1]
 
 with open(filename, mode='r') as file:
     lines = file.readlines()
