@@ -46,7 +46,7 @@ Cancer Manifest Files:
 
 | Cancer type       | manifest                     |
 |-------------------|------------------------------|
-| Brain             | gdc_manifest_20230408_201809 |
+| Brain             | gdc_manifest_20230409_205108 |
 | Breast            | gdc_manifest_20230408_202627 |
 | Kidney            | gdc_manifest_20230408_203008 |
 | Ovarian           | gdc_manifest_20230408_210113 |
