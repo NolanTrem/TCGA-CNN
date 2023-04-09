@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 import sys
 
 driver = webdriver.Chrome()
@@ -28,16 +29,21 @@ with open(filename, mode='r') as file:
                 driver.get("https://portal.gdc.cancer.gov/files/" + entries[0])
 
                 wait = WebDriverWait(driver, 2)
-                element = wait.until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Primary Tumor') "
-                                                                               "or contains(text(), "
-                                                                               "'Solid Tissue Normal')]")))
 
-                if "Primary Tumor" in driver.page_source:
-                    entries.append("Primary Tumor")
-                elif "Solid Tissue Normal" in driver.page_source:
-                    entries.append("Solid Tissue Normal")
-                else:
-                    entries.append("Not found")
+                try:
+                    element = wait.until(
+                        EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Primary Tumor') "
+                                                                  "or contains(text(), "
+                                                                  "'Solid Tissue Normal')]")))
+
+                    if "Primary Tumor" in driver.page_source:
+                        entries.append("Primary Tumor")
+                    elif "Solid Tissue Normal" in driver.page_source:
+                        entries.append("Solid Tissue Normal")
+                    else:
+                        entries.append("Not found")
+                except TimeoutException:
+                    entries.append("Error")
 
                 # Join the line back together with tabs
                 new_line = "\t".join(entries) + "\n"
