@@ -7,14 +7,11 @@ The manifest is created in the [GDC Data Portal repository](https://portal.gdc.c
 desired files to the cart and downloading. From there, the manifest is entered into the dataProcessing.py file for
 processing to occur. Whole slide images are selected and added to the cart and downloaded.
 
-Cancer Manifest Files:
-1. Brain Cancer: gdc_manifest_20230408_201809
-2. Breast Cancer: gdc_manifest_20230408_202627
-3. Kidney Cancer: gdc_manifest_20230408_203008
-
 ## Downloading manifest data
 
-Installing the [gdc install](https://www.debuggingtissue.com/latest-articles/installing-and-using-the-cli-gcd-data-transfer-tool-client-using-an-ubuntu-os)
+Once a manifest has been created, the corresponding manifest data must be downloaded. This can be done using the
+[GDC Data Transfer Tool](https://gdc.cancer.gov/access-data/gdc-data-transfer-tool). Downloading the binary
+distribution for your system.
 
 ## Data labeling method
 
@@ -28,3 +25,18 @@ _Manifest before labeling._
 ![Alt text](images/exampleManifesetAfterLabeling.png "Manifest after labeling")
 _Manifest after labeling._
 
+## Data collection for training, testing, and validation
+
+Training, testing, and validation has been done on whole slide images from 5 different cancer types, each with 100
+whole slide images for each cell type. For each of these, 60 of the whole slide images are primary tumors whereas 40 are
+normal solid tissue.
+
+Cancer Manifest Files:
+
+| Cancer type       | manifest                     |
+|-------------------|------------------------------|
+| Brain             | gdc_manifest_20230408_201809 |
+| Breast            | gdc_manifest_20230408_202627 |
+| Kidney            | gdc_manifest_20230408_203008 |
+| Ovarian           | gdc_manifest_20230408_210113 |
+| Bronchus and Lung | gdc_manifest_20230408_210429 |
