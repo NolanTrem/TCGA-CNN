@@ -44,10 +44,10 @@ normal solid tissue.
 
 Cancer Manifest Files:
 
-| Cancer type       | manifest                     | Tumor | Normal |
-|-------------------|------------------------------|-------|--------|
-| Brain             | gdc_manifest_20230409_205108 | 94    | 6      |
-| Breast            | gdc_manifest_20230408_202627 | 92    | 8      |
-| Kidney            | gdc_manifest_20230408_203008 | 92    | 8      |
-| Ovarian           | gdc_manifest_20230408_210113 | 97    | 3      |
-| Bronchus and Lung | gdc_manifest_20230408_210429 | 92    | 8      |
+| Cancer type       | manifest                     | Raw manifest size | Tumor | Normal |
+|-------------------|------------------------------|-------------------|-------|--------|
+| Brain             | gdc_manifest_20230409_205108 | 1923              | 94    | 6      |
+| Breast            | gdc_manifest_20230408_202627 | 1979              | 92    | 8      |
+| Kidney            | gdc_manifest_20230408_203008 | 2334              | 92    | 8      |
+| Ovarian           | gdc_manifest_20230408_210113 | 1375              | 97    | 3      |
+| Bronchus and Lung | gdc_manifest_20230408_210429 | 2252              | 92    | 8      |
