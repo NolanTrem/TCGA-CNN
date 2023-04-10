@@ -24,6 +24,8 @@ for i = 1 : length(theFiles)
     % columnVector{i,3} = 'done';
 end
 
-assignin('base', cancerType + 'ColumnVector', olumnVector);
+datasetName = cancerType + 'ColumnVector';
+assignin('base', datasetName, columnVector);
+save(datasetName + ".mat", datasetName)
 
 end
