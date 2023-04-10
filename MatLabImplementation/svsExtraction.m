@@ -1,24 +1,29 @@
-function [] = svsExtraction(folderPath, cancerType)
+function [] = svsExtraction(manifestPath, folderPath, cancerType)
 
+%% Data initialization
 filePattern = fullfile(folderPath, "*.svs");
 theFiles= dir(filePattern);
+manifestFile = readtable(manifestPath, Delimiter='\t', ReadVariableNames=true);
 
 columnVector = cell(length(theFiles), 3);
 
+%% Image extraction
 for i = 1 : length(theFiles)
     fullFileName = fullfile(theFiles(i).folder, theFiles(i).name);
     
     io = imread(fullFileName, 'Index', 3);
     
-    columnVector{i,1} = theFiles(i).name;
+    fileName = theFiles(i).name;
+
+    columnVector{i,1} = fileName;
     columnVector{i,2} = io;
     
-    % TODO: This needs to parse each line of the manifest file and return
-    % the last entry, which is the label for the data.
-    % https://www.mathworks.com/matlabcentral/answers/497882-parsing-text-files-for-beginners
+    %% Labeling
+    columnVector{i,3} = string(table2cell(manifestFile(strcmp(manifestFile{:,2}, fileName), 6)));
+
     % columnVector{i,3} = 'done';
 end
 
-assignin('base', cancerType + 'columnVector', columnVector);
+assignin('base', cancerType + 'ColumnVector', olumnVector);
 
 end
