@@ -17,12 +17,14 @@ mkdir(normalTissueSubdirectory);
 for i = 1 : length(theFiles)
     fullFileName = fullfile(theFiles(i).folder, theFiles(i).name);
     fileName = theFiles(i).name;
+
+    disp(string(table2cell(manifestFile(strcmp(manifestFile{:,2}, fileName), 6))))
     
-    if strcmp(string(table2cell(manifestFile(strcmp(manifestFile{:,2}, fileName), 6))), 'Primary Tumor')
+    if strcmp(string(table2cell(manifestFile(strcmp(manifestFile{:,2}, fileName), 6))), "Primary Tumor")
         savedAs = strcat(primaryTumorSubdirectory, "/", extractBefore(fileName, length(fileName)-3), ".png");
         io = imread(fullFileName, 'Index', 3);
         imwrite(io, savedAs);
-    elseif strcmp(string(table2cell(manifestFile(strcmp(manifestFile{:,2}, fileName), 6))), 'Solid Tissue Normal')
+    elseif strcmp(string(table2cell(manifestFile(strcmp(manifestFile{:,2}, fileName), 6))), "Solid Tissue Normal")
         savedAs = strcat(normalTissueSubdirectory, "/", extractBefore(fileName, length(fileName)-3), ".png");
         io = imread(fullFileName, 'Index', 3);
         imwrite(io, savedAs);
@@ -31,7 +33,5 @@ for i = 1 : length(theFiles)
     end
 
 end
-
-disp(i)
 
 end
