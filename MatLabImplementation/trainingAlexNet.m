@@ -76,11 +76,11 @@ largeClassLabels = cat(1, largeClassLabels{:});
 balancedDS = imageDatastore(cat(1, smallClassDSFinal.Files, largerClass.Files));
 balancedDS.Labels = cat(1, smallClassDSFinal.Labels, largeClassLabels);
 
-augmentedBalancedDS = augmentedImageDatastore(imageSize, balancedDS, 'DataAugmentation', imageAugmenter);
+numTrainingFiles = floor(numel(balancedDS.Files)*0.8);
+[imdsTrain,imdsTest] = splitEachLabel(balancedDS,numTrainingFiles,'randomize');
 
-%%
-numTrainingFiles = floor(numel(augmentedBalancedDS.Files)*0.8);
-[imdsTrain,imdsTest] = splitEachLabel(augmentedBalancedDS,numTrainingFiles,'randomize');
+augmentedImdsTrain = augmentedImageDatastore(imageSize, imdsTrain, 'DataAugmentation', imageAugmenter);
+augmentedImdsTest = augmentedImageDatastore(imageSize, imdsTest, 'DataAugmentation', imageAugmenter);
 %%
 
 % imageAugmenter = imageDataAugmenter( ...
@@ -168,7 +168,7 @@ options = trainingOptions('sgdm', ...
 
 %% train the network
 
-net_trained = trainNetwork(imdsTrain, layers, options);
+net_trained = trainNetwork(augmentedBalancedDS, layers, options);
 
 %% Calculate the accuracy of the network
 % YPred = classify(net,imdsValidation);
