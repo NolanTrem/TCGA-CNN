@@ -1,17 +1,17 @@
 %function [] = trainingAlexNet(folderPath)
 %% 
-datasetPath = "/Volumes/NolansDrive/TCGA-CNN/Lung/lungCancerimages";
+datasetPath = "/Volumes/NolansDrive/TCGA-CNN/Lung/lungCancerimages/resizedImages";
 imds = imageDatastore(datasetPath, ...
     'IncludeSubfolders',true, ...
     'LabelSource','foldernames');
 
 %%
 % Define the target image size
-imageSize = [227 227 3];
+imageSize = [500 500 3];
 
-% Define the image augmenter to resize the images
-auimds = augmentedImageDatastore(imageSize,imds);
-
+%%
+numTrainingFiles = 50;
+[imdsTrain,imdsTest] = splitEachLabel(imds,numTrainingFiles,'randomize');
 
 %% define architecture of neural network
 % determine weights of classes and number of classes
@@ -21,7 +21,7 @@ auimds = augmentedImageDatastore(imageSize,imds);
 
 % define architecture
 layers = [
-    imageInputLayer([227 227 3],"Name","data")
+    imageInputLayer([500 500 3],"Name","data")
     convolution2dLayer([11 11],96,"Name","conv1","BiasLearnRateFactor",2,"Stride",[4 4])
     reluLayer("Name","relu1")
     crossChannelNormalizationLayer(5,"Name","norm1","K",1)
@@ -43,13 +43,13 @@ layers = [
     fullyConnectedLayer(4096,"Name","fc7","BiasLearnRateFactor",2)
     reluLayer("Name","relu7")
     dropoutLayer(0.5,"Name","drop7")
-    fullyConnectedLayer(1000,"Name","fc8","BiasLearnRateFactor",2)
+    fullyConnectedLayer(2,"Name","fc8","BiasLearnRateFactor",2)
     softmaxLayer("Name","prob")
     classificationLayer("Name","output")];
 
 %% set training options
 options = trainingOptions('sgdm', ...
-    'MaxEpochs',20, ...
+    'MaxEpochs',32, ...
     'InitialLearnRate',1e-4, ...
     'Verbose',false, ...
     'Plots','training-progress');
@@ -58,7 +58,7 @@ options = trainingOptions('sgdm', ...
 %  - the inputs are
 %  -- "option" from section "set training options"
 
-net_trained = trainNetwork(auimds, layers, options);
+net_trained = trainNetwork(imdsTrain, layers, options);
 
 %% Calculate the accuracy of the network
 % predictions = classify(net_trained, testingOutput);
