@@ -8,22 +8,20 @@ imds = imageDatastore(datasetPath, ...
     'LabelSource','foldernames');
 
 imageSize = [500 500 3];
-numTrainingFiles = 207;
-[imdsTrain,imdsTest] = splitEachLabel(imds,numTrainingFiles,'randomize');
 
 %% Create augmented image datastore
-n = numel(imds.Files);
-
-imageMatrix = zeros(500, 500, 3, n);
-
-for i = 1:n
-    s = imds.Files(i);
-    I = imread(char(s{1}));
-    imageMatrix(:,:,:,i) = I;
-end
-
-XTrain = imageMatrix;
-YTrain = imds.Labels;
+% n = numel(imds.Files);
+% 
+% imageMatrix = zeros(500, 500, 3, n);
+% 
+% for i = 1:n
+%     s = imds.Files(i);
+%     I = imread(char(s{1}));
+%     imageMatrix(:,:,:,i) = I;
+% end
+% 
+% XTrain = imageMatrix;
+% YTrain = imds.Labels;
 
 
 
@@ -42,9 +40,9 @@ end
 
 % Define the image augmentation parameters
 imageAugmenter = imageDataAugmenter( ...
-    'RandRotation',[-10,10], ...
-    'RandXTranslation',[-10 10], ...
-    'RandYTranslation',[-10 10], ...
+    'RandRotation',[-45,45], ...
+    'RandXTranslation',[-50 50], ...
+    'RandYTranslation',[-50 50], ...
     'RandXReflection', true, ...
     'RandYReflection', true);
 
@@ -78,24 +76,27 @@ largeClassLabels = cat(1, largeClassLabels{:});
 balancedDS = imageDatastore(cat(1, smallClassDSFinal.Files, largerClass.Files));
 balancedDS.Labels = cat(1, smallClassDSFinal.Labels, largeClassLabels);
 
+augmentedBalancedDS = augmentedImageDatastore(imageSize, balancedDS, 'DataAugmentation', imageAugmenter);
+
+%%
+numTrainingFiles = 207;
+[imdsTrain,imdsTest] = splitEachLabel(imds,numTrainingFiles,'randomize');
 %%
 
-
-
-imageAugmenter = imageDataAugmenter( ...
-    'RandRotation',[-10,10], ...
-    'RandXTranslation',[-10 10], ...
-    'RandYTranslation',[-10 10], ...
-    'RandXReflection', true, ...
-    'RandYReflection', true);
-
-augimds = augmentedImageDatastore(imageSize, XTrain, YTrain, 'dataAugmentation', imageAugmenter);
-
-idx = randperm(size(XTrain,4),50);
-XValidation = XTrain(:,:,:,idx);
-XTrain(:,:,:,idx) = [];
-YValidation = YTrain(idx);
-YTrain(idx) = [];
+% imageAugmenter = imageDataAugmenter( ...
+%     'RandRotation',[-10,10], ...
+%     'RandXTranslation',[-10 10], ...
+%     'RandYTranslation',[-10 10], ...
+%     'RandXReflection', true, ...
+%     'RandYReflection', true);
+% 
+% augimds = augmentedImageDatastore(imageSize, XTrain, YTrain, 'dataAugmentation', imageAugmenter);
+% 
+% idx = randperm(size(XTrain,4),50);
+% XValidation = XTrain(:,:,:,idx);
+% XTrain(:,:,:,idx) = [];
+% YValidation = YTrain(idx);
+% YTrain(idx) = [];
 
 %% Create figures
 
@@ -155,7 +156,7 @@ layers = [
 
 % set training options
 options = trainingOptions('sgdm', ...
-    'MaxEpochs', 32, ...
+    'MaxEpochs', 10, ...
     'L2Regularization', 1e-4, ...
     'LearnRateSchedule', 'piecewise', ...
     'LearnRateDropFactor', 0.2, ...
@@ -167,7 +168,7 @@ options = trainingOptions('sgdm', ...
 
 %% train the network
 
-net_trained = trainNetwork(balancedDS, layers, options);
+net_trained = trainNetwork(augmentedBalancedDS, layers, options);
 
 %% Calculate the accuracy of the network
 % YPred = classify(net,imdsValidation);
