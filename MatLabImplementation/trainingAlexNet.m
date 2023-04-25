@@ -1,17 +1,65 @@
-%function [] = trainingAlexNet(folderPath)
-%% 
-datasetPath = "/Volumes/NolansDrive/TCGA-CNN/Lung/lungCancerimages/resizedImages";
+function [] = trainingAlexNet(datasetPath)
+
+%% Create image datastore
+
 imds = imageDatastore(datasetPath, ...
     'IncludeSubfolders',true, ...
     'LabelSource','foldernames');
 
-%%
-% Define the target image size
 imageSize = [500 500 3];
-
-%%
-numTrainingFiles = 50;
+numTrainingFiles = 207;
 [imdsTrain,imdsTest] = splitEachLabel(imds,numTrainingFiles,'randomize');
+
+%% Create augmented image datastore
+n = numel(imds.Files);
+
+imageMatrix = zeros(500, 500, 3, n);
+
+for i = 1:n
+    s = imds.Files(i);
+    I = imread(char(s{1}));
+    imageMatrix(:,:,:,i) = I;
+end
+
+XTrain = imageMatrix;
+YTrain = imds.Labels;
+
+imageAugmenter = imageDataAugmenter( ...
+    'RandRotation',[-180,180], ...
+    'RandXTranslation',[-100 100], ...
+    'RandYTranslation',[-100 100], ...
+    'RandXReflection', true, ...
+    'RandYReflection', true);
+
+augimds = augmentedImageDatastore(imageSize, XTrain, YTrain, 'dataAugmentation', imageAugmenter);
+
+idx = randperm(size(XTrain,4),50);
+XValidation = XTrain(:,:,:,idx);
+XTrain(:,:,:,idx) = [];
+YValidation = YTrain(idx);
+YTrain(idx) = [];
+
+%% Create figures
+
+figure
+numImages = 521;
+perm = randperm(numImages,20);
+for i = 1:20
+    subplot(4,5,i);
+    imshow(imds.Files{perm(i)});
+    drawnow;
+end
+sgtitle("Images before augmentation");
+
+figure
+numImages = 521;
+perm = randperm(numImages,20);
+for i = 1:20
+    subplot(4,5,i);
+    imshow(augimds.Files{perm(i)});
+    drawnow;
+end
+sgtitle("Images after augmentation");
 
 %% define architecture of neural network
 % determine weights of classes and number of classes
@@ -47,7 +95,7 @@ layers = [
     softmaxLayer("Name","prob")
     classificationLayer("Name","output")];
 
-%% set training options
+% set training options
 options = trainingOptions('sgdm', ...
     'MaxEpochs',32, ...
     'InitialLearnRate',1e-4, ...
@@ -55,15 +103,11 @@ options = trainingOptions('sgdm', ...
     'Plots','training-progress');
 
 %% train the network
-%  - the inputs are
-%  -- "option" from section "set training options"
 
-net_trained = trainNetwork(imdsTrain, layers, options);
+net_trained = trainNetwork(augimds, layers, options);
 
 %% Calculate the accuracy of the network
-% predictions = classify(net_trained, testingOutput);
-% predictionLabels = transpose(testingLabels);
-% accuracy = sum(predictions == predictionLabels)/numel(predictionLabels);
-% 
-% %% save the trained network
+% YPred = classify(net,imdsValidation);
+% YValidation = imdsValidation.Labels;
+% accuracy = mean(YPred == YValidation)
 % save(trainedNetwork,'net_trained', 'accuracy', 'predictionLabels', 'predictions');
