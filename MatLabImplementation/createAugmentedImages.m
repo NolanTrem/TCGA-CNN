@@ -2,11 +2,11 @@
 
 %%
 
-originalImages = 'E:\TCGA-CNN\commonCancerDataset';
+originalImages = '/Volumes/NolansDrive/TCGA-CNN/commonCancerDataset';
 if ~exist(strcat(originalImages, '/augmentedImages'), 'dir')
     mkdir(strcat(originalImages, '/augmentedImages'));
 end
-outputPath = 'E:\TCGA-CNN\commonCancerDataset\augmentedImages';
+outputPath = '/Volumes/NolansDrive/TCGA-CNN/commonCancerDataset/augmentedImages';
 primaryTumorPath = dir(strcat(originalImages, '/primaryTumor/*.png'));
 solidTissueNormalPath = dir(strcat(originalImages, '/solidTissueNormal/*.png'));
 
@@ -25,42 +25,44 @@ primaryTumorAugmentedImages = dir(strcat(outputPath, '/primaryTumor'));
 solidTissueNormalAugmentedImages = dir(strcat(outputPath, '/solidTissueNormal'));
 
 for i = 1:numel(primaryTumorCleanImages)
-    image = imread(fullfile(originalImages, 'primaryTumor\', primaryTumorCleanImages(i).name));
+    image = imread(fullfile(originalImages, 'primaryTumor/', primaryTumorCleanImages(i).name));
     
-    tform1 = randomAffine2d(Rotation=[0 45]);
+    tform1 = randomAffine2d(Rotation=[0 5]);
     image = imwarp(image,tform1);
 
-    tform2 = randomAffine2d(XShear=[-45 45]);
+    tform2 = randomAffine2d(XShear=[-5 5]);
     image = imwarp(image, tform2);
 
-    tform3 = randomAffine2d(YShear=[-45 45]);
+    tform3 = randomAffine2d(YShear=[-5 5]);
     image = imwarp(image, tform3);
 
-    image = jitterColorHSV(image,'Contrast',1,'Hue',1,'Saturation',1,'Brightness',1);
+    image = jitterColorHSV(image,'Contrast',0.2,'Hue',0.2,'Saturation',0.2,'Brightness',0.2);
 
-    sigma = 1+5*rand;
-    image= imgaussfilt(image,sigma); 
+    sigma = 1+rand;
+    image= imgaussfilt(image,sigma);
+    name = strcat('augId1', primaryTumorCleanImages(i).name);
 
-    imwrite(image, fullfile(outputPath, 'primaryTumor\' , name, 'augId1.png'));
+    imwrite(image, fullfile(outputPath, 'primaryTumor/', name), 'jpg');
 end
 
 for i = 1:numel(solidTissueNormalCleanImages)
     name = solidTissueNormalCleanImages(i).name;
-    image = imread(fullfile(originalImages, 'solidTissueNormal\', solidTissueNormalCleanImages(i).name));
+    image = imread(fullfile(originalImages, 'solidTissueNormal/', solidTissueNormalCleanImages(i).name));
     
-    tform1 = randomAffine2d(Rotation=[0 45]);
+    tform1 = randomAffine2d(Rotation=[0 5]);
     image = imwarp(image,tform1);
 
-    tform2 = randomAffine2d(XShear=[-45 45]);
+    tform2 = randomAffine2d(XShear=[-5 5]);
     image = imwarp(image, tform2);
 
-    tform3 = randomAffine2d(YShear=[-45 45]);
+    tform3 = randomAffine2d(YShear=[-5 5]);
     image = imwarp(image, tform3);
 
-    image = jitterColorHSV(image,'Contrast',1,'Hue',1,'Saturation',1,'Brightness',1);
+    image = jitterColorHSV(image,'Contrast',0.2,'Hue',0.2,'Saturation',0.2,'Brightness',0.2);
 
-    sigma = 1+5*rand;
-    image= imgaussfilt(image,sigma); 
+    sigma = rand;
+    image= imgaussfilt(image,sigma);
+    name = strcat('augId1', solidTissueNormalCleanImages(i).name);
 
-    imwrite(image, fullfile(outputPath, 'solidTissueNormal\' , name, 'augId1.png'));
+    imwrite(image, fullfile(outputPath, 'solidTissueNormal/', name), 'jpg');
 end
