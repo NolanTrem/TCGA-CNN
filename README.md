@@ -73,9 +73,11 @@ shear and zoom images during model training. The resulting data was not robust e
 In future tests, we plan to use the 20,000 image augmented dataset to train the Python model.
 
 ![Alt text](images/matlabTraining9415.png "Matlab training results")
+
 _Matlab training achieved a validation accuracy of 94.15%._
 
 ![Alt text](images/pythonTraining8245.png "Python training results")
+
 _Matlab training achieved a validation accuracy of 82.45%._
 
 
@@ -85,4 +87,5 @@ accuracy of 0.97 and loss of 0.14. Although it performed better than the python 
 issues of a small dataset. Increasing the size of the dataset would prevent overfitting issues in the FFN. 
 
 ![Alt text](images/pythonTraining9796.png "Python training results")
+
 _Matlab training achieved a validation accuracy of 97.96%._
