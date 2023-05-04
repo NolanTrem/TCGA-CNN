@@ -1,11 +1,16 @@
 function [] = trainingAlexNet(datasetPath)
 
-datasetPath = '/Users/nolantremelling/Downloads/commonCancerDataset';
+datasetPath = 'E:\TCGA-CNN\commonCancerDataset\augmentedImages';
+validationPath = 'E:\TCGA-CNN\commonCancerDataset\originalImages';
 %% Create image datastore
 
 imds = imageDatastore(datasetPath, ...
     'IncludeSubfolders',true, ...
     'LabelSource','foldernames');
+
+validationImds = imageDatastore(validationPath, ...
+    "IncludeSubfolders",true, ...
+    "LabelSource","foldernames");
 
 imageSize = [500 500 3];
 
@@ -25,18 +30,18 @@ imageSize = [500 500 3];
 
 
 
-% Separate the dataset into two classes
-smallClass = subset(imds, find(imds.Labels == 'solidTissueNormal'));
-largeClass = subset(imds, find(imds.Labels == 'primaryTumor'));
-
-% Determine which class is smaller
-if numel(smallClass.Files) < numel(largeClass.Files)
-    smallerClass = smallClass;
-    largerClass = largeClass;
-else
-    smallerClass = largeClass;
-    largerClass = smallClass;
-end
+% % Separate the dataset into two classes
+% smallClass = subset(imds, find(imds.Labels == 'solidTissueNormal'));
+% largeClass = subset(imds, find(imds.Labels == 'primaryTumor'));
+% 
+% % Determine which class is smaller
+% if numel(smallClass.Files) < numel(largeClass.Files)
+%     smallerClass = smallClass;
+%     largerClass = largeClass;
+% else
+%     smallerClass = largeClass;
+%     largerClass = smallClass;
+% end
 
 % Define the image augmentation parameters
 imageAugmenter = imageDataAugmenter( ...
@@ -47,40 +52,40 @@ imageAugmenter = imageDataAugmenter( ...
     'RandYReflection', true);
 
 % Create an augmented image datastore for the smaller class
-augmentedSmallerClass = augmentedImageDatastore(imageSize, smallerClass, 'DataAugmentation', imageAugmenter);
+% augmentedSmallerClass = augmentedImageDatastore(imageSize, smallerClass, 'DataAugmentation', imageAugmenter);
+% 
+% % Set the desired number of augmented images for the smaller class
+% desiredNumSmallerClassImages = numel(largerClass.Files);
+% 
+% % Calculate the number of times to repeat the smaller class images
+% numRepeats = ceil(desiredNumSmallerClassImages / numel(smallerClass.Files));
+% 
+% % Convert the smaller class datastore to a cell array and repeat it
+% smallClassCells = num2cell(smallerClass.Files);
+% smallClassCellsRepeated = repmat(smallClassCells, [numRepeats 1]);
+% 
+% % Convert the repeated smaller class cell array back to an image datastore
+% smallClassDS = imageDatastore(cat(1, smallClassCellsRepeated{:}));
+% 
+% % Shuffle the smaller class datastore
+% smallClassDS = shuffle(smallClassDS);
+% 
+% % Take the first `desiredNumSmallerClassImages` images from the shuffled smaller class datastore
+% smallClassDSFinal = subset(smallClassDS, 1:desiredNumSmallerClassImages);
+% 
+% % Create labels for the larger class datastore
+% largeClassLabels = repmat({largeClass.Labels}, [numRepeats 1]);
+% largeClassLabels = cat(1, largeClassLabels{:});
+% 
+% % Combine the smaller and larger class datastores
+% balancedDS = imageDatastore(cat(1, smallClassDSFinal.Files, largerClass.Files));
+% balancedDS.Labels = cat(1, smallClassDSFinal.Labels, largeClassLabels);
 
-% Set the desired number of augmented images for the smaller class
-desiredNumSmallerClassImages = numel(largerClass.Files);
-
-% Calculate the number of times to repeat the smaller class images
-numRepeats = ceil(desiredNumSmallerClassImages / numel(smallerClass.Files));
-
-% Convert the smaller class datastore to a cell array and repeat it
-smallClassCells = num2cell(smallerClass.Files);
-smallClassCellsRepeated = repmat(smallClassCells, [numRepeats 1]);
-
-% Convert the repeated smaller class cell array back to an image datastore
-smallClassDS = imageDatastore(cat(1, smallClassCellsRepeated{:}));
-
-% Shuffle the smaller class datastore
-smallClassDS = shuffle(smallClassDS);
-
-% Take the first `desiredNumSmallerClassImages` images from the shuffled smaller class datastore
-smallClassDSFinal = subset(smallClassDS, 1:desiredNumSmallerClassImages);
-
-% Create labels for the larger class datastore
-largeClassLabels = repmat({largeClass.Labels}, [numRepeats 1]);
-largeClassLabels = cat(1, largeClassLabels{:});
-
-% Combine the smaller and larger class datastores
-balancedDS = imageDatastore(cat(1, smallClassDSFinal.Files, largerClass.Files));
-balancedDS.Labels = cat(1, smallClassDSFinal.Labels, largeClassLabels);
-
-numTrainingFiles = floor(numel(balancedDS.Files)*0.8);
-[imdsTrain,imdsTest] = splitEachLabel(balancedDS,numTrainingFiles,'randomize');
-
-augmentedImdsTrain = augmentedImageDatastore(imageSize, imdsTrain, 'DataAugmentation', imageAugmenter);
-augmentedImdsTest = augmentedImageDatastore(imageSize, imdsTest, 'DataAugmentation', imageAugmenter);
+%numTrainingFiles = floor(numel(imds.Files)*0.8);
+[imdsTrain,imdsValidate] = splitEachLabel(imds, 8000, 'randomize');
+% 
+% augmentedImdsTrain = augmentedImageDatastore(imageSize, imdsTrain, 'DataAugmentation', imageAugmenter);
+% augmentedImdsTest = augmentedImageDatastore(imageSize, imdsTest, 'DataAugmentation', imageAugmenter);
 %%
 
 % imageAugmenter = imageDataAugmenter( ...
@@ -157,6 +162,7 @@ layers = [
 % set training options
 options = trainingOptions('sgdm', ...
     'MaxEpochs', 10, ...
+    'MiniBatchSize', 64, ...
     'L2Regularization', 1e-4, ...
     'LearnRateSchedule', 'piecewise', ...
     'LearnRateDropFactor', 0.2, ...
@@ -164,11 +170,13 @@ options = trainingOptions('sgdm', ...
     'InitialLearnRate', 1e-4, ...
     'Verbose', false, ...
     'Plots', 'training-progress', ...
+    'ValidationData',imdsValidate, ...
+    'ValidationPatience', 5, ...
     'ExecutionEnvironment', 'auto');
 
 %% train the network
 
-net_trained = trainNetwork(augmentedBalancedDS, layers, options);
+net_trained = trainNetwork(imdsTrain, layers, options);
 
 %% Calculate the accuracy of the network
 % YPred = classify(net,imdsValidation);
