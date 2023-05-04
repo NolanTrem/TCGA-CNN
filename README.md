@@ -38,16 +38,51 @@ _Manifest after labeling._
 
 ## Data processing method for training, testing, and validation
 
-Training, testing, and validation has been done on whole slide images from 5 different cancer types, each with 100
-whole slide images for each cell type. For each of these, 60 of the whole slide images are primary tumors whereas 40 are
-normal solid tissue.
-
+Training and testing has been done on whole slide images from the 5 most prevalent cancer types. Due to imbalances that
+exist in TCGA project, we sought to create as balanced of a dataset as possible, although it was not always possible.
+Before data augmentation, whole slide images were collected from manifest files as follows:
 Cancer Manifest Files:
 
-| Cancer type       | manifest                     | Raw manifest size | Tumor | Normal |
-|-------------------|------------------------------|-------------------|-------|--------|
-| Brain             | gdc_manifest_20230409_205108 | 1923              | 94    | 6      |
-| Breast            | gdc_manifest_20230408_202627 | 1979              | 92    | 8      |
-| Kidney            | gdc_manifest_20230408_203008 | 2334              | 92    | 8      |
-| Ovarian           | gdc_manifest_20230408_210113 | 1375              | 97    | 3      |
-| Bronchus and Lung | gdc_manifest_20230408_210429 | 2252              | 92    | 8      |
+| Cancer type       | manifest                | Tumor | Normal |
+|-------------------|-------------------------|-------|--------|
+| Brain             | brainManifestFinal.txt  | 94    | 6      |
+| Breast            | breastManifestFinal.txt | 135   | 60     |
+| Kidney            | kidneyManifestFinal.txt | 92    | 53     |
+| Ovarian           | ovaryManifestFinal.txt  | 48    | 51     |
+| Bronchus and Lung | lungManifestFinal.txt   | 92    | 52     |
+
+After using the GDC Client Tool to download the .SVS whole slide images we arrived at a common cancer dataset that
+included 208 solid tissue normal samples and 315 primary tumor samples. To expand the size of the dataset, a Matlab
+script to create a balanced, augmented dataset was created. This was used to create an augmented dataset of 20,000
+images.
+
+![Alt text](images/TCGA-02-0071-01A-01-TS1.08ce5791-0029-4680-90fa-db48c90d45bd.png "Original image sample")
+_Original image sample._
+
+![Alt text](images/augId1TCGA-02-0071-01A-01-TS1.08ce5791-0029-4680-90fa-db48c90d45bd.png "Original image sample")
+_Example of augmentation of the original image._
+
+![Alt text](images/augId2TCGA-02-0071-01A-01-TS1.08ce5791-0029-4680-90fa-db48c90d45bd.png "Original image sample")
+_Example of augmentation of the original image._
+
+## Whole slide image training results
+
+The Matlab implementation was trained using the 20,000 image balanced augmented dataset, while the Python
+implementation has only been trained using ImageDataGenerator from Keras library to rotate, shift width, shift height,
+shear and zoom images during model training. The resulting data was not robust enough to achieve the desired accuracy.
+In future tests, we plan to use the 20,000 image augmented dataset to train the Python model.
+
+![Alt text](images/matlabTraining9415.png "Matlab training results")
+_Matlab training achieved a validation accuracy of 94.15%._
+
+![Alt text](images/pythonTraining8245.png "Python training results")
+_Matlab training achieved a validation accuracy of 82.45%._
+
+
+## RNA-Seq training results
+A simple feed forward network was implemented to analyze RNA-Seq data. The feedforward network performed with an
+accuracy of 0.97 and loss of 0.14. Although it performed better than the python whole-slide image model, it still faces
+issues of a small dataset. Increasing the size of the dataset would prevent overfitting issues in the FFN. 
+
+![Alt text](images/pythonTraining9796.png "Python training results")
+_Matlab training achieved a validation accuracy of 97.96%._
