@@ -89,3 +89,7 @@ issues of a small dataset. Increasing the size of the dataset would prevent over
 ![Alt text](images/pythonTraining9796.png "Python training results")
 
 _Matlab training achieved a validation accuracy of 97.96%._
+
+
+## Citations
+> Oyelade, O. N., & Ezugwu, A. E. (2021). A bioinspired neural architecture search based convolutional neural network for breast cancer detection using histopathology images. Scientific Reports, 11(1), 1-28. https://doi.org/10.1038/s41598-021-98978-7
