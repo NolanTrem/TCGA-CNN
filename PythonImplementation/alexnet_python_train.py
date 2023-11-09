@@ -107,4 +107,5 @@ plt.ylabel('Loss')
 plt.xlabel('Epoch')
 plt.legend(['Train', 'Validation'], loc='upper left')
 
-plt.show()
+# Save the plots to files
+plt.savefig('/Volumes/NolansDrive/TCGA-CNN/commonCancerDataset/augmentedImages/accuracy_loss_plot.png')
